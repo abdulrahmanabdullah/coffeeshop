@@ -1,0 +1,5 @@
+backend/env
+backend/src/__pycache__
+backend/src/auth/__pycache__
+frontend/node_modules
+frontend/environments
