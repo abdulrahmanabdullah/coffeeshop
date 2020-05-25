@@ -11,12 +11,10 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
-'''
-@TODO uncomment the following line to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-'''
+
+# DELETE TABLE AND CREATE NEW ONE
 # db_drop_and_create_all()
+
 
 # ROUTES
 
@@ -58,11 +56,10 @@ def drink_details(jwt):
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def add_drink(jwt):
-    body = request.get_json()
-    title = body.get('title', None)
-
-    receipt = json.dumps(body.get("recipe"))
     try:
+        body = request.get_json()
+        title = body.get('title', None)
+        receipt = json.dumps(body.get("recipe"))
         drink = Drink(title=title, recipe=receipt)
         drink.insert()
         long_drink = drink.long()
@@ -85,9 +82,14 @@ def update_drink(jwt, drink_id):
         drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
         if drink is None:
             abort(404)
-        # drink.title = json.dumps(body.get('title', drink.title))
+        # Get title
         drink.title = body.get('title', None)
-        drink.recipe = json.dumps(body.get('recipe', drink.recipe))
+
+        # Keep old data if user not update recipe
+        recipe = body.get('recipe', None)
+        if recipe is not None:
+            drink.recipe = json.dumps(body.get('recipe', drink.recipe))
+
         drink.update()
 
         return jsonify({

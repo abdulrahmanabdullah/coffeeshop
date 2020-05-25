@@ -22,7 +22,7 @@ class AuthError(Exception):
         self.status_code = status_code
 
     def get_error_message(self):
-        return self.error['code']
+        return self.error['code'], self.error['description']
 
 
 # Auth Header
